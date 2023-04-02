@@ -1,4 +1,13 @@
-import { Column, Model, Table, PrimaryKey, DataType } from "sequelize-typescript";
+import {
+  Column,
+  Model,
+  Table,
+  PrimaryKey,
+  DataType,
+  ForeignKey,
+  BelongsTo,
+} from "sequelize-typescript";
+import { UserModel } from "./User";
 
 export type Movie = {
   id: number;
@@ -6,9 +15,10 @@ export type Movie = {
   description: string;
   directorName: string;
   releaseDate: Date;
+  createdBy: number;
 };
 
-@Table({ modelName: "Movies"})
+@Table({ modelName: "Movies" })
 export class MovieModel extends Model<MovieModel> {
   @PrimaryKey
   @Column({ allowNull: false, autoIncrement: true, type: DataType.INTEGER })
@@ -25,4 +35,11 @@ export class MovieModel extends Model<MovieModel> {
 
   @Column({ allowNull: false, type: DataType.DATE })
   releaseDate: Date;
+
+  @ForeignKey(() => UserModel)
+  @Column({ allowNull: false, type: DataType.INTEGER })
+  createdBy: number;
+
+  @BelongsTo(() => UserModel)
+  user: UserModel;
 }

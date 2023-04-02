@@ -6,7 +6,13 @@ import { ReviewOps } from "./services/ReviewOps";
 export const resolvers = {
   Query: {
     users: Authentication.users,
-    movies: MovieOps.movies
+    movies: MovieOps.movies,
+    reviews: ReviewOps.reviews,
+
+    movie: MovieOps.movie,
+    review: ReviewOps.review,
+
+    searchMovie: MovieOps.searchMovies,
   },
   Mutation: {
     createMovie: MovieOps.createMovie,
@@ -17,6 +23,8 @@ export const resolvers = {
     updateReview: ReviewOps.updateReview,
     deleteReview: ReviewOps.deleteReview,
 
-    signUp: Authentication.signup
+    signUp: Authentication.signup,
+    signin: Authentication.signin,
+    changePassword: Authentication.changePassword,
   },
 };
