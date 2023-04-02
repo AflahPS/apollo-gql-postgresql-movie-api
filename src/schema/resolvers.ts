@@ -13,6 +13,7 @@ export const resolvers = {
     review: ReviewOps.review,
 
     searchMovie: MovieOps.searchMovies,
+    reviewsByMovie: ReviewOps.reviewsByMovie,
   },
   Mutation: {
     createMovie: MovieOps.createMovie,

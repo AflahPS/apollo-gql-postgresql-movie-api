@@ -2,18 +2,53 @@ import { thrower } from "../../utils/errorThrower";
 import { Review, ReviewModel } from "../../models";
 import { GraphQLError } from "graphql";
 import { MyContext } from "../../app";
+import { FilterReviewArgs, SortReviewArgs } from "Review";
+import { Op, OrderItem, WhereOptions } from "sequelize";
 
 export const ReviewOps = {
-  reviews: async (_: undefined, args: { page?: number; limit?: number }) => {
+  reviews: async (
+    _: undefined,
+    args: {
+      page?: number;
+      limit?: number;
+      filter?: FilterReviewArgs;
+      sort?: SortReviewArgs;
+    }
+  ) => {
     try {
-      const page = args?.page || 1;
-      const limit = args?.limit || 10;
-      const offset = limit * (page - 1);
+      const { filter, sort, page, limit } = args;
+      // Paginations
+      const pageNum = page || 1;
+      const _limit = limit || 10;
+      const _offset = _limit * (pageNum - 1);
+
+      // Filter
+      const where: WhereOptions = {};
+      if (filter) {
+        if (filter.movieId) {
+          where.movieId = filter.movieId;
+        }
+        if (filter.userId) {
+          where.userId = filter.userId;
+        }
+        if (filter.ratingGreaterThan) {
+          where.rating = { [Op.gt]: filter.ratingGreaterThan };
+        }
+        if (filter.ratingLessThan) {
+          where.rating = { [Op.lt]: filter.ratingLessThan };
+        }
+      }
+
+      // Sort
+      const order: OrderItem[] = sort ? [[sort.field, sort.order]] : undefined;
 
       const reviews = await ReviewModel.findAll({
-        offset: offset,
-        limit: limit,
+        offset: _offset,
+        limit: _limit,
+        where,
+        order,
       });
+
       return reviews;
     } catch (err) {
       thrower(err);
@@ -24,16 +59,18 @@ export const ReviewOps = {
     args: { page?: number; limit?: number; movieId: number }
   ) => {
     try {
-      const page = args?.page || 1;
-      const limit = args?.limit || 10;
-      const offset = limit * (page - 1);
+      const { page, limit, movieId } = args;
+
+      const pageNum = page || 1;
+      const _limit = limit || 10;
+      const _offset = _limit * (pageNum - 1);
 
       const reviews = await ReviewModel.findAll({
         where: {
-          movieId: args.movieId,
+          movieId,
         },
-        offset: offset,
-        limit: limit,
+        offset: _offset,
+        limit: _limit,
       });
 
       return reviews;
@@ -41,7 +78,13 @@ export const ReviewOps = {
       thrower(err);
     }
   },
-  review: (_: undefined, args: { id: number }) => ReviewModel.findByPk(args.id),
+  review: (_: undefined, args: { id: number }) => {
+    try {
+      return ReviewModel.findByPk(args.id);
+    } catch (err) {
+      thrower(err);
+    }
+  },
   createReview: async (_: undefined, args: Partial<Review>, ctx: MyContext) => {
     try {
       const { user } = ctx;
@@ -69,9 +112,6 @@ export const ReviewOps = {
       if (selected.userId !== user.id)
         throw new GraphQLError(`You are not allowed to perform this action !`);
       const review = await selected.update(toUpdate);
-      if (!review) {
-        throw new GraphQLError(`Review not found !`);
-      }
       return review;
     } catch (err) {
       thrower(err);

@@ -2,15 +2,50 @@ import { GraphQLError } from "graphql";
 import { Movie, MovieModel } from "../../models";
 import { thrower } from "../../utils/errorThrower";
 import { MyContext } from "../../app";
+import { Op, OrderItem, WhereOptions } from "sequelize";
+import { SortMovieArgs, FilterMovieArgs } from "Movie";
 
 export const MovieOps = {
-  movies: async (_: undefined, args: { page?: number; limit?: number }) => {
+  movies: async (
+    _: undefined,
+    args: {
+      page?: number;
+      limit?: number;
+      filter?: FilterMovieArgs;
+      sort?: SortMovieArgs;
+    }
+  ) => {
     try {
+      // Pagination:
       const page = args?.page || 1;
       const limit = args?.limit || 10;
       const offset = limit * (page - 1);
 
+      const { filter, sort } = args;
+
+      // Filter:
+      const where: WhereOptions<MovieModel> = {};
+      if (filter) {
+        if (filter?.directorName) {
+          where.directorName = filter.directorName;
+        }
+        if (filter?.createdBy) {
+          where.createdBy = filter.createdBy;
+        }
+        if (filter?.releaseDateAfter) {
+          where.releaseDate = { [Op.gt]: filter.releaseDateAfter };
+        }
+        if (filter?.releaseDateBefore) {
+          where.releaseDate = { [Op.lt]: filter.releaseDateBefore };
+        }
+      }
+
+      // Sort
+      const order: OrderItem[] = sort ? [[sort.field, sort.order]] : undefined;
+
       const movies = await MovieModel.findAll({
+        where,
+        order,
         offset: offset,
         limit: limit,
       });
@@ -45,6 +80,7 @@ export const MovieOps = {
   },
   movie: async (parent: undefined, args: { id: number }) => {
     try {
+      // TODO: Validate
       const { id } = args;
       console.log(id);
 
@@ -62,14 +98,15 @@ export const MovieOps = {
   ) => {
     try {
       const { user } = ctx;
-      console.log({ user });
-
       if (!user)
         throw new GraphQLError(`You are not allowed to perform this action !`);
 
+      // TODO: Validate
       args.createdBy = user.id;
       args.releaseDate = new Date(args.releaseDate);
       const newMovie = await MovieModel.create(args);
+      console.log({ newMovie });
+
       return newMovie;
     } catch (err) {
       thrower(err);

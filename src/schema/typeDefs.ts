@@ -1,7 +1,6 @@
-// Construct a schema, using GraphQL schema language
 export const typeDefs = `
     type User {
-        id: Int
+        id: ID
         username: String
         email: String
         createdAt: String
@@ -10,17 +9,18 @@ export const typeDefs = `
     }
 
     type Movie {
-        id: Int
+        id: ID
         movieName: String
         description: String
         directorName: String
         releaseDate: String
         createdAt: String
         updatedAt: String
+        createdBy: ID
     }
 
     type Review {
-        id: Int
+        id: ID
         movieId: Int
         userId: Int
         rating: Int
@@ -29,19 +29,49 @@ export const typeDefs = `
         updatedAt: String
     }
 
+    input MovieFilterInput {
+        directorName: String
+        createdBy: Int
+        releaseDateAfter: String
+        releaseDateBefore: String
+    }
+
+    input SortInput {
+        field: String!
+        order: SortOrder!
+    }
+
+    enum SortOrder {
+        ASC
+        DESC
+    }
+
+    input ReviewFilterInput {
+        movieId: Int
+        userId: Int
+        ratingGreaterThan: Float
+        ratingLessThan: Float
+    }
+
     type Query {
         users: [User]
+
         movies (
             page: Int
             limit: Int
+            filter: MovieFilterInput
+            sort: SortInput
         ): [Movie]
 
         reviews (
             page: Int
             limit: Int
+            filter: ReviewFilterInput
+            sort: SortInput
         ) : [Review]
 
         movie (id: Int) : Movie
+
         searchMovie (
             page: Int
             limit: Int
@@ -54,25 +84,27 @@ export const typeDefs = `
         reviewsByMovie (
             page: Int
             limit: Int
-            movieId: Int
+            movieId: Int!
         ): [Review]
+
     }
 
     type Mutation {
+
         createMovie(
             movieName: String!
             description: String!
             directorName: String!
             releaseDate: String!
-        ): Movie
+        ): Movie!
 
         updateMovie (
-            id: Int!
+            id: ID!
             movieName: String
             description: String
             directorName: String
             releaseDate: String
-        ): Movie
+        ): Movie!
 
         deleteMovie (
             id: ID!
@@ -83,18 +115,18 @@ export const typeDefs = `
             userId: Int
             rating: Int!
             comment: String!
-        ): Review
+        ): Review!
 
         updateReview (
-            id: Int!
-            movieId: Int!
-            userId: Int
-            rating: Int!
-            comment: String!
-        ): Review
+            id: ID!
+            movieId: ID
+            userId: ID
+            rating: Int
+            comment: String
+        ): Review!
 
         deleteReview (
-            id: Int!
+            id: ID!
         ): Boolean!
         
         signUp(

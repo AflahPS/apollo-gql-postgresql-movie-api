@@ -16,6 +16,7 @@ export type Review = {
   rating: number;
   comment: string;
 };
+
 @Table({ modelName: "Reviews" })
 export class ReviewModel extends Model<ReviewModel> {
   @PrimaryKey
