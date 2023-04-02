@@ -43,8 +43,19 @@ export const MovieOps = {
       thrower(err);
     }
   },
+  filterMovie: async (parent: undefined, args: Partial<Movie>) => {
+    try {
+      // TODO: Validate
+      const filterObj = { ...args };
+      const movies = await MovieModel.findAll({ where: filterObj });
+      return movies;
+    } catch (err) {
+      thrower(err);
+    }
+  },
   movie: async (parent: undefined, args: { id: number }) => {
     try {
+      // TODO: Validate
       const { id } = args;
       console.log(id);
 
@@ -62,14 +73,15 @@ export const MovieOps = {
   ) => {
     try {
       const { user } = ctx;
-      console.log({ user });
-
       if (!user)
         throw new GraphQLError(`You are not allowed to perform this action !`);
 
+      // TODO: Validate
       args.createdBy = user.id;
       args.releaseDate = new Date(args.releaseDate);
       const newMovie = await MovieModel.create(args);
+      console.log({ newMovie });
+
       return newMovie;
     } catch (err) {
       thrower(err);

@@ -13,6 +13,9 @@ export const resolvers = {
     review: ReviewOps.review,
 
     searchMovie: MovieOps.searchMovies,
+    reviewsByMovie: ReviewOps.reviewsByMovie,
+
+    filterMovie: MovieOps.filterMovie,
   },
   Mutation: {
     createMovie: MovieOps.createMovie,

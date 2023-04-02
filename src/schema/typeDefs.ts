@@ -17,6 +17,7 @@ export const typeDefs = `
         releaseDate: String
         createdAt: String
         updatedAt: String
+        createdBy: Int
     }
 
     type Review {
@@ -31,6 +32,7 @@ export const typeDefs = `
 
     type Query {
         users: [User]
+
         movies (
             page: Int
             limit: Int
@@ -42,6 +44,7 @@ export const typeDefs = `
         ) : [Review]
 
         movie (id: Int) : Movie
+
         searchMovie (
             page: Int
             limit: Int
@@ -49,12 +52,23 @@ export const typeDefs = `
             description: String
         ) : [Movie]
 
+        filterMovie (
+            id: Int
+            movieName: String
+            description: String
+            directorName: String
+            releaseDate: String
+            createdAt: String
+            updatedAt: String
+            createdBy: Int
+        ): [Movie]
+
         review (id: Int) : Review
 
         reviewsByMovie (
             page: Int
             limit: Int
-            movieId: Int
+            movieId: Int!
         ): [Review]
     }
 

@@ -24,6 +24,8 @@ export const ReviewOps = {
     args: { page?: number; limit?: number; movieId: number }
   ) => {
     try {
+      console.log({ args });
+
       const page = args?.page || 1;
       const limit = args?.limit || 10;
       const offset = limit * (page - 1);
@@ -69,9 +71,6 @@ export const ReviewOps = {
       if (selected.userId !== user.id)
         throw new GraphQLError(`You are not allowed to perform this action !`);
       const review = await selected.update(toUpdate);
-      if (!review) {
-        throw new GraphQLError(`Review not found !`);
-      }
       return review;
     } catch (err) {
       thrower(err);
