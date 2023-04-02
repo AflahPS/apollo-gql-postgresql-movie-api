@@ -6,6 +6,7 @@ export const typeDefs = `
         email: String
         createdAt: String
         updatedAt: String
+        token: String
     }
 
     type Movie {
@@ -30,54 +31,87 @@ export const typeDefs = `
 
     type Query {
         users: [User]
-        movies: [Movie]
-        reviews: [Review]
+        movies (
+            page: Int
+            limit: Int
+        ): [Movie]
+
+        reviews (
+            page: Int
+            limit: Int
+        ) : [Review]
+
+        movie (id: Int) : Movie
+        searchMovie (
+            page: Int
+            limit: Int
+            movieName: String
+            description: String
+        ) : [Movie]
+
+        review (id: Int) : Review
+
+        reviewsByMovie (
+            page: Int
+            limit: Int
+            movieId: Int
+        ): [Review]
     }
 
     type Mutation {
         createMovie(
+            movieName: String!
+            description: String!
+            directorName: String!
+            releaseDate: String!
+        ): Movie
+
+        updateMovie (
+            id: Int!
             movieName: String
             description: String
             directorName: String
             releaseDate: String
         ): Movie
-        updateMovie: String
-        deleteMovie: String
+
+        deleteMovie (
+            id: ID!
+        ) : Boolean!
         
         createReview(
-            id: Int
-            movieId: Int
+            movieId: Int!
             userId: Int
-            rating: Int
-            comment: String
+            rating: Int!
+            comment: String!
         ): Review
-        updateReview: Review
-        deleteReview: String
+
+        updateReview (
+            id: Int!
+            movieId: Int!
+            userId: Int
+            rating: Int!
+            comment: String!
+        ): Review
+
+        deleteReview (
+            id: Int!
+        ): Boolean!
+        
         signUp(
             username: String
             email: String
             password: String
         ): User
+
+        signin(
+            email: String
+            password: String
+        ): User
+
+        changePassword(
+            email: String
+            oldPassword: String
+            newPassword: String
+        ): User
     }
 `;
-
-// type Authentication {
-//     signup: String
-//     signin: String
-//     changePassword: String
-// }
-
-// type MovieOps {
-//     movies: [Movie]
-//     movie: String
-//     createMovie: String
-//     updateMovie: String
-//     deleteMovie: String
-// }
-
-// type ReviewOps {
-//     reviews: [Review]
-//     createReview: String
-//     updateReview: String
-//     deleteReview: String
-// }

@@ -7,8 +7,7 @@ import {
   DataType,
   BelongsTo,
 } from "sequelize-typescript";
-import { MovieModel } from "./Movie";
-import UserModel from "./User";
+import { UserModel, MovieModel } from ".";
 
 export type Review = {
   id: number;
@@ -18,7 +17,7 @@ export type Review = {
   comment: string;
 };
 @Table({ modelName: "Reviews" })
-export default class ReviewModel extends Model<ReviewModel> {
+export class ReviewModel extends Model<ReviewModel> {
   @PrimaryKey
   @Column({ allowNull: false, autoIncrement: true, type: DataType.INTEGER })
   id: number;

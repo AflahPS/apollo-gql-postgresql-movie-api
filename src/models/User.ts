@@ -6,8 +6,15 @@ import {
   DataType,
 } from "sequelize-typescript";
 
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  password: string;
+};
+
 @Table({ modelName: "Users" })
-export default class UserModel extends Model {
+export class UserModel extends Model {
   @PrimaryKey
   @Column({ allowNull: false, autoIncrement: true, type: DataType.INTEGER })
   id: number;
@@ -15,7 +22,7 @@ export default class UserModel extends Model {
   @Column({ allowNull: false, type: DataType.STRING })
   username: string;
 
-  @Column({ allowNull: false, type: DataType.STRING })
+  @Column({ allowNull: false, type: DataType.STRING, unique: true })
   email: string;
 
   @Column({ allowNull: false, type: DataType.STRING })
