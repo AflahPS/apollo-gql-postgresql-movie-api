@@ -66,9 +66,7 @@ export const ReviewOps = {
       const _offset = _limit * (pageNum - 1);
 
       const reviews = await ReviewModel.findAll({
-        where: {
-          movieId,
-        },
+        where: { movieId },
         offset: _offset,
         limit: _limit,
       });
