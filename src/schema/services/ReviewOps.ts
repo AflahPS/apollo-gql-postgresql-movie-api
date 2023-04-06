@@ -61,6 +61,7 @@ export const ReviewOps = {
     try {
       const { page, limit, movieId } = args;
 
+      // pagination
       const pageNum = page || 1;
       const _limit = limit || 10;
       const _offset = _limit * (pageNum - 1);
